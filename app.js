@@ -2,6 +2,8 @@ var express = require("express");
 var path    = require("path"); 
 var session = require("client-sessions"); 
 var http    = require("http"); 
+var socket = require("./modules/serverSocket"); 
+
 
 var app = express(); 
 
@@ -23,3 +25,6 @@ var port = process.env.PORT || 3000;
 app.set('port', port ); 
 var server = http.createServer(app);
 server.listen(port);  
+socket.init(server); 
+
+socket.createRoom('1234'); 

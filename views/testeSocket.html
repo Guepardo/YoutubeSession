@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Teste Socket</title>
+</head>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script>
+  var socket = io('http://localhost:3000');
+
+
+ socket.on('connect', function(data){
+   socket.emit('enterRoom', { room: '1234' });
+ }); 
+
+  socket.on('msg', function (data) {
+    console.log("Msg>__ "+data.data);
+  });
+
+  socket.on('newUser', function(data){
+  	console.log(data.data); 
+  }); 
+
+  socket.on('leave', function(data){
+  	console.log(data.data); 
+  });
+
+  function sendMsg(msg){
+  	socket.emit('msg',{ data : msg } ); 
+  }
+
+  // var interval = setInterval(function(){
+  // 	socket.emit('msg', { my: 'data'}); 
+  // }, 1000); 
+
+</script>
+</body>
+</html>
