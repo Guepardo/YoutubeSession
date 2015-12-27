@@ -14,7 +14,8 @@ YouSession possibilita aos seus usuários assistir a vídeos do YouTube simultânea
 ### Tecnologias usadas
 
 * Framework front-end [Materialize](http://materializecss.com/)  
-* [Pacote de ícones](https://www.iconfinder.com/iconsets/social-15) por Bartlomiej Jacak
+* [Pacote de ícones](https://www.iconfinder.com/iconsets/social-15) por Bartlomiej Jacak  
+* [Imagem da tela inicial](https://unsplash.com/photos/bBQ9lhB-wpY) por Hannah Rodrigo
 
 
 ### Dificuldades do projeto
