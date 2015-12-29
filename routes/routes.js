@@ -11,7 +11,7 @@ router.get('/socktest', function(req, res, next){
 })
 
 router.get('/session', function(req, res, next){
-	res.render('index2.html'); 
+	res.render('session.html'); 
 }); 
 
 module.exports = router; 

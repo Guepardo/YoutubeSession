@@ -1,54 +1,35 @@
-/* Custom Stylesheet */
-/**
- * Use this file to override Materialize files so you can update
- * the core Materialize files in the future
- *
- * Made By MaterializeCSS.com
- */
+@import url(https://fonts.googleapis.com/css?family=Ubuntu);
 
-nav ul a,
-nav .brand-logo {
-  color: #ff6f00;
+body{
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: lighter;
 }
 
 p {
   line-height: 2rem;
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+.brand-logo{
+  margin-left: 5%;
+  font-family: 'Ubuntu', sans-serif;
+  font-weight: normal;
 }
 
 .parallax{
-  width: 10%;
+  width: 50%;
   height: auto;
-}
-
-.button-collapse {
-  color: #ffd54f;
 }
 
 .parallax-container {
-  min-height: 380px;
+  min-height: 400px;
   line-height: 0;
   height: auto;
-  color: rgba(255,255,255,.9);
 }
   .parallax-container .section {
     width: 100%;
   }
-
-@media only screen and (max-width : 992px) {
-  .parallax-container .section {
-    position: absolute;
-    top: 40%;
-  }
-  #index-banner .section {
-    top: 10%;
-  }
-}
-
-@media only screen and (max-width : 600px) {
-  #index-banner .section {
-    top: 0;
-  }
-}
 
 .icon-block {
   padding: 0 15px;
