@@ -37,7 +37,7 @@
             <h5 class="header col s12 light white-text">Uma maneira prática e fácil de assistir aos vídeos do YouTube com seus amigos</h5>
           </div>
           <div class="row center">
-            <a href="/session" class="btn-large waves-effect waves-light indigo darken-2">Entrar</a>
+            <a href="#modal1" class="btn-large waves-effect waves-light indigo darken-2 modal-trigger ">Entrar</a>
           </div>
           <br><br>
         </div>
@@ -114,9 +114,71 @@
       </div>
     </footer>
 
+    <!-- Modal -->
+     <!-- Modal Trigger -->
+      
+
+      <!-- Modal Structure -->
+      <div id="modal1" class="modal modal-fixed-footer">
+        <div class="modal-content">
+          <h4>Estamos quase lá</h4>
+          <p>Entre com as informações abaixo para abrir a sua sessão</p>
+
+          <div class="row">
+          <div class="input-field col s12">
+            <input id="nome_sala" type="text" class="validate">
+            <label for="text">Nome da Sala</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="input-field col s12">
+            <input id="link_video" type="text" class="validate">
+            <label for="text">Link do vídeo do Youtube</label>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col s3">
+            <a id="register" class="waves-effect waves-light btn">Iniciar Sessão</a>
+          </div>
+        </div>
+
+        </div>
+        <div class="modal-footer">
+          <a href="#!" class="modal-action modal-close waves-effect waves-green btn-flat ">Fechar Modal</a>
+        </div>
+      </div>
+
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script src="js/materialize.js"></script>
     <script src="js/init.js"></script>
+
+    <script  type="text/javascript" charset="utf-8" >
+       $(document).ready(function(){
+          $('.modal-trigger').leanModal();
+
+          // Tratando eventos de botões: 
+          
+          $('#register').click(function(){
+            var nomeSala = $('#nome_sala').val(); 
+            var linkVideo = $('#link_video').val(); 
+
+            var data = { 'nomeSala' : nomeSala, 'linkVideo': linkVideo }; 
+
+            $.post('/register',data,function(data){
+
+              if(!data.status){
+                Materialize.toast('Tente outro link, esse é inválido :/', 10000); 
+              }else{
+                Materialize.toast('Deu todo certo, deveria redirecionar para a sessão :)', 10000); 
+              }
+            }); 
+          }); 
+
+
+        });
+    </script>
+
   </body>
 </html>

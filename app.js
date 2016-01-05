@@ -2,14 +2,18 @@ var express = require("express");
 var path    = require("path"); 
 var session = require("client-sessions"); 
 var http    = require("http"); 
+var bodyParser = require("body-parser"); 
 var socket = require("./modules/serverSocket"); 
 
 
 var app = express(); 
 
 //Arquivo de configuração de rotas: 
-var routes = require("./routes/routes"); 
-app.use('/', routes ); 
+//
+app.use(bodyParser.urlencoded());
+app.use(bodyParser.json()); 
+app.use('/', require("./routes/routes") );
+app.use('/', require("./routes/registerRoute")); 
 
 //Registrando pasta de arquivos estáticos: 
 app.use(express.static(path.join(__dirname, 'public')));
