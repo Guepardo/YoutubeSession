@@ -201,6 +201,7 @@
  <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
  <script type="text/javascript">
 
+ 	// splashscrean
  	var SplashScrean = function(){
  		this.RATE = 1000; 
  	}; 
@@ -213,8 +214,8 @@
  		$("#splashscrean").fadeOut(this.RATE); 
  	} 
 
+ 	// Teste socket
  	 var socket = io(window.location.origin);
-
 
 	 socket.on('connect', function(data){
 	   socket.emit('enterRoom', { room: hashId });
