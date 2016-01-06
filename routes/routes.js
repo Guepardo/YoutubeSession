@@ -10,7 +10,7 @@ router.get('/socktest', function(req, res, next){
 	res.render('testeSocket.html'); 
 })
 
-router.get('/session', function(req, res, next){
+router.get('/sessionteste', function(req, res, next){
 	res.render('session.html'); 
 }); 
 

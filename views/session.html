@@ -4,10 +4,14 @@
 	<title>YouSession</title>
   	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/css/materialize.min.css">
   	<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-  	<link rel="stylesheet" href="css/animate.css">
+  	<link rel="stylesheet" href="../css/animate.css">
   	<link href="css/style.css" type="text/css" rel="stylesheet"/>
  	<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
  	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.5/js/materialize.min.js"></script>
+ 	<!-- A identificação sala será anexada aqui dinâmicamente -->
+    <script  type="text/javascript" >
+       var hashId = "<%= hashId %>";
+    </script>
 </head>
 <body>
  <!-- Navegação -->
@@ -163,7 +167,7 @@
           	</div>
         </footer>
 
- <script src="js/session_app.js"></script>
+ <script src="../js/session_app.js"></script>
  <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
  <script type="text/javascript">
  	// $('#teste').addClass('animated infinite swing');

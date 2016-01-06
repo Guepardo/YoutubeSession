@@ -10,6 +10,11 @@
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
     <link href="css/materialize.css" type="text/css" rel="stylesheet"/>
     <link href="css/style.css" type="text/css" rel="stylesheet"/>
+
+    <!-- A identificação sala será anexada aqui dinâmicamente -->
+    <script  type="text/javascript" >
+       var hashIds = "%=hashId%";
+    </script>
   </head>
 
   <body>
@@ -171,7 +176,7 @@
               if(!data.status){
                 Materialize.toast('Tente outro link, esse é inválido :/', 10000); 
               }else{
-                Materialize.toast('Deu todo certo, deveria redirecionar para a sessão :)', 10000); 
+                Materialize.toast('Deu todo certo, deveria redirecionar para a sessão :)'+data.hash, 10000); 
               }
             }); 
           }); 

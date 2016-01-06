@@ -14,6 +14,11 @@ Room.prototype.registerSessionName = function(session_name){
 	this.session_name = session_name; 
 }; 
 
+Room.prototype.setProperties = function(link_video,sala_name){
+	this.link_video = link_video; 
+	this.sala_name  = sala_name;  
+}; 
+
 Room.prototype.registerOwner = function(hash){
 	if(this.room_owner != 'undefined' ) return; 
 	

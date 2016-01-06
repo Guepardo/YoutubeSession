@@ -12,8 +12,10 @@ var app = express();
 //
 app.use(bodyParser.urlencoded());
 app.use(bodyParser.json()); 
+
 app.use('/', require("./routes/routes") );
 app.use('/', require("./routes/registerRoute")); 
+app.use('/', require("./routes/sessionRoute")); 
 
 //Registrando pasta de arquivos estáticos: 
 app.use(express.static(path.join(__dirname, 'public')));
