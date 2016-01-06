@@ -12,8 +12,32 @@
     <script  type="text/javascript" >
        var hashId = "<%= hashId %>";
     </script>
+
+    <!-- Tirar essa parte depois -->
+    <style type="text/css">
+         #splashscrean{
+         	position:absolute;
+         	top:0;
+         	left:0;
+         	bottom:0;
+         	width: 100%; 
+         	height:100%;
+         	background-color: white;
+         }
+
+         #splashscrean > img{
+         	position: relative; 
+         	top:50%;
+         	left:50%;
+         	/*reduzindo margens para centralizar*/
+         	margin-left: -282px;
+         	margin-top: -188px;
+         }
+
+    </style>
 </head>
 <body>
+
  <!-- Navegação -->
 	<div class="navbar-fixed">
 		<nav class="indigo lighten-1">
@@ -140,14 +164,14 @@
               	<div class="col l2 offset-l1 s12">
 	                <h6 class="white-text">calaca</h6>
 	                <ul>
-	                  <li><a href="mailto:lorena.calaca.od@gmail.com"><img class="center-align" src="img/email.png" height="48" width="48"></a></li>
-	                  <li><a href="https://br.linkedin.com/in/calaca"><img class="center-align" src="img/in.png" height="48" width="48"></a></li>
+	                  <li><a href="mailto:lorena.calaca.od@gmail.com"><img class="center-align" src="../img/email.png" height="48" width="48"></a></li>
+	                  <li><a href="https://br.linkedin.com/in/calaca"><img class="center-align" src="../img/in.png" height="48" width="48"></a></li>
 	                </ul>
 	              </div>
 	              <div class="col l2 offset-l2 s12">
 	                <h6 class="white-text">Guepardo</h6>
 	                <ul>
-	                  <li><a href="mailto:bsinet1@gmail.com"><img class="center-align" src="img/email.png" height="48" width="48"></a></li>
+	                  <li><a href="mailto:bsinet1@gmail.com"><img class="center-align" src="../img/email.png" height="48" width="48"></a></li>
 	                  <li><a href="https://br.linkedin.com/in/allyson-maciel-guimar%C3%A3es-30a417b9/pt"><img class="center-align" src="img/in.png" height="48" width="48"></a></li>
 	                </ul>
 	              </div>
@@ -167,11 +191,68 @@
           	</div>
         </footer>
 
+   <!-- splash screan -->
+        <div id="splashscrean">	
+        	<img src="http://www.blackbox.sa.com/app/webroot/img/loading.gif">
+        </div>
+
  <script src="../js/session_app.js"></script>
+ <script src="../socket.io/socket.io.js"></script>
  <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
  <script type="text/javascript">
- 	// $('#teste').addClass('animated infinite swing');
+
+ 	var SplashScrean = function(){
+ 		this.RATE = 1000; 
+ 	}; 
+
+ 	SplashScrean.prototype.show = function(){
+ 		$("#splashscrean").fadeIn(this.RATE); 
+ 	}
+
+ 	SplashScrean.prototype.hide = function(){
+ 		$("#splashscrean").fadeOut(this.RATE); 
+ 	} 
+
+ 	 var socket = io(window.location.origin);
+
+
+	 socket.on('connect', function(data){
+	   socket.emit('enterRoom', { room: hashId });
+	 }); 
+
+	  socket.on('msg', function (data) {
+	    console.log("Msg>__ "+data.data);
+	    Materialize.toast('Nova mensagem: '+ data.data, 4000); 
+	  });
+
+	  socket.on('newUser', function(data){
+	  	console.log(data.data); 
+	  	Materialize.toast('Novo usuário na sala', 4000); 
+	  }); 
+
+	  socket.on('leave', function(data){
+	  	console.log(data.data); 
+	  	Materialize.toast('Usuário saiu da sala', 4000); 
+	  });
+
+	  socket.on('reconnect_attempt', function(){
+	  	Materialize.toast('Socket Reconectando', 4000); 
+	  }); 
+
+	  socket.on('reconnect', function(){
+	  	Materialize.toast('Conexão reestabelecida', 4000);
+	  }); 
+
+	  function sendMsg(msg){
+	  	socket.emit('msg',{ data : msg } ); 
+	  }
+
+ 	$(document).ready(function(){ 
+ 		var splash = new SplashScrean(); 
+ 		setTimeout(function(){
+ 			splash.hide();  
+ 		},10000); 
+ 	}); 
  </script>
 </body>
-
 </html>
