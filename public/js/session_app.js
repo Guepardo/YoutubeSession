@@ -16,13 +16,15 @@ function onYouTubeIframeAPIReady() {
 
 
 //App lib
-var WindowSession = function(){
-  const FRENQUENCY_INTERVAL = 200; 
-  const DELAY_FADE 			= 500;
+var WindowSession = function(socket){
+	const FRENQUENCY_INTERVAL = 200; 
+	const DELAY_FADE 			= 500;
 
-  var self = this; 
-  self.users = []; 
+	var self    = this; 
+	self.users  = []; 
+	self.socket = socket; 
 
+	self.stageMachine = -3; 
   // creating interval to check changes on youtube player: 	
   setInterval(function(){
   	switch(player.getPlayerState()){
@@ -81,16 +83,20 @@ WindowSession.prototype.newMessage = function(data){
 
 	var tempHeight = $('#chat_content').height()+100; 
 	console.log(tempHeight); 
-	$("#chat_content").animate({ scrollTop: tempHeight }, this.DELAY_FADE);
+	$("#chat_content").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
 }; 
 
 WindowSession.prototype.playerStop = function(){
-	
+	player.stopVideo(); 
 }; 
 
 WindowSession.prototype.playerPause = function(){
-	
+	player.pauseVideo(); 
 }; 
+
+WindowSession.prototype.playerPlay = function(){
+	player.playVideo(); 
+}; 	
 
 WindowSession.prototype.playerSeek = function(){
 	
@@ -101,21 +107,34 @@ WindowSession.prototype.typingChange = function(){
 };
 
 WindowSession.prototype.onPlay = function(){
-	console.log("Playing"); 
+	if(this.stageMachine == 1 )return; 
+	console.log("Playing");
+	this.socket.emit('onPlay',{});  
+	this.stageMachine = 1;  
 }; 
 
 WindowSession.prototype.onPause = function(){
-	console.log("Playing"); 
+	if(this.stageMachine == 2 )return; 
+	console.log("Pause"); 
+	this.socket.emit('onPause');
+	this.stageMachine = 2;   
 }; 
 
 WindowSession.prototype.onSeek = function(){
 	console.log("Seek"); 
+	this.socket.emit('onSeek');  
 }; 
 
 WindowSession.prototype.onStop = function(){
+	if(this.stageMachine == 0 )return; 
 	console.log("Stop"); 
+	this.socket.emit('onStop'); 
+	this.stageMachine = 0;  
 }; 
 
 WindowSession.prototype.onBuffering = function(){
-	console.log("Buffering"); 
+	if(this.stageMachine == 3 )return; 
+	console.log("Buffering");
+	this.socket.emit('onBuffering'); 
+	this.stageMachine = 3;  
 }; 

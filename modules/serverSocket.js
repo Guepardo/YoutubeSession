@@ -18,7 +18,7 @@ socketServer.init = function(server) {
 	io.on('connection', function(socket){
 
 		socket.on('enterRoom',function(data){
-			console.log("usuário registrando sala na sala: " + data.room); 
+			// console.log("usuário registrando sala na sala: " + data.room); 
 
 			//Registrando usuário na sala específica. 
 			socket.__room = data.room; 
@@ -69,7 +69,6 @@ socketServer.init = function(server) {
 				hashName : socket.hashName, 
 				name     : socket.name
 			}; 
-
 			delete socketServer[socket.hashName]; 
 
 			io.sockets.in(socket.__room).emit('leave',userInfo); 
@@ -77,8 +76,73 @@ socketServer.init = function(server) {
 
 		socket.on('registerOwner', function(){
 			if(socket.__room == 'undefined') return; 
-			rooms[socket.__room].registerOwner(socket.__hashName); 
+			//Adicionando proprietário da sala: 
+			if(!socketServer.rooms[socket.__room].ownerExists())
+				socketServer.rooms[socket.__room].registerOwner(socket.hashName); 
+			else
+				return; 
+
+			var msgBuild ={
+				userName: socket.name, 
+				msg     : 'Registrado como proprietário da sala'
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgBuild); 
 		});
+
+		socket.on('onPlay',function(data){
+			console.log("onPlay" ); 
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar play"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+
+			io.sockets.in(socket.__room).emit('onPlay'); 
+		}); 
+
+		socket.on('onPause',function(data){
+			console.log("onPause" ); 
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar pause"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+
+			io.sockets.in(socket.__room).emit('onPause'); 
+		}); 
+
+		socket.on('onSeek',function(data){
+		}); 
+
+		socket.on('onStop',function(data){
+			console.log("onStop" ); 
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar stop"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+
+			io.sockets.in(socket.__room).emit('onStop'); 
+		}); 
+
+		socket.on('onBuffering',function(data){
+			console.log("onBuffering" ); 
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar buffering"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+
+			io.sockets.in(socket.__room).emit('onBuffering'); 
+		}); 
 	}); 
 
 socketServer.roomExists = function(hashId){

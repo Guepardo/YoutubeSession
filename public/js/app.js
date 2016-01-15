@@ -1,7 +1,11 @@
 $(document).ready(function(){
  	// Teste socket
  	var socket = io(window.location.origin);
- 	var session = new WindowSession(); 
+ 	var session = new WindowSession(socket); 
+
+ 	//Registrando o proprietário da sala: 
+
+ 	socket.emit('registerOwner'); 
 
  	socket.on('connect', function(data){
  		socket.emit('enterRoom', { room: hashId });
@@ -37,6 +41,24 @@ $(document).ready(function(){
  		session.start(data.linkVideo,0,'large'); 
  	}); 
 
+ 	socket.on('onPlay',function(data){
+ 		session.playerPlay(); 
+ 	}); 
+
+ 	socket.on('onPause',function(data){
+ 		session.playerPause(); 
+ 	}); 
+
+ 	socket.on('onSeek',function(data){
+ 	}); 
+
+ 	socket.on('onStop',function(data){
+ 		session.playerStop(); 
+ 	}); 
+
+ 	socket.on('onBuffering',function(data){
+ 	});
+
  	function sendMsg(msg){
  		socket.emit('msg',{ data : msg } ); 
  	}
@@ -50,17 +72,17 @@ $(document).ready(function(){
  	}); 
 
  	// splashscrean
-	var SplashScrean = function(){
-		this.RATE = 1000; 
-	}; 
+ 	var SplashScrean = function(){
+ 		this.RATE = 1000; 
+ 	}; 
 
-	SplashScrean.prototype.show = function(){
-		$("#splashscrean").fadeIn(this.RATE); 
-	}
+ 	SplashScrean.prototype.show = function(){
+ 		$("#splashscrean").fadeIn(this.RATE); 
+ 	}
 
-	SplashScrean.prototype.hide = function(){
-		$("#splashscrean").fadeOut(this.RATE); 
-	} 
+ 	SplashScrean.prototype.hide = function(){
+ 		$("#splashscrean").fadeOut(this.RATE); 
+ 	} 
 
  	var splash = new SplashScrean(); 
  	setTimeout(function(){
