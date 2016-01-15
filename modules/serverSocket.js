@@ -1,6 +1,7 @@
-var Server = require('socket.io');
+var Server   = require('socket.io');
 var CryptoJS = require("crypto-js"); 
-var Room   = require('./Room'); 
+var Room     = require('./Room'); 
+var Factory  = require('./Factory'); 
 
 
 var socketServer ={}; 
@@ -8,44 +9,84 @@ var socketServer ={};
 socketServer.init = function(server) {
 	socketServer.io = null; 
 	socketServer.rooms = [];
+	socketServer.users = []; 
 	socketServer.io = io = new Server (server); 
 
-	console.log('!Servidor socket iniciado.'); 
+	socketServer.factory = new Factory(); 
 
+	console.log('!Servidor socket iniciado.'); 
 	io.on('connection', function(socket){
 
-	socket.on('enterRoom',function(data){
-	
-		console.log("usuário registrando sala"); 
+		socket.on('enterRoom',function(data){
+			console.log("usuário registrando sala na sala: " + data.room); 
 
-		socket.__room = data.room; 
-		socket.hashName = CryptoJS.MD5( new Date().toString()); 
-		socket.join(data.room); 
+			//Registrando usuário na sala específica. 
+			socket.__room = data.room; 
 
-		io.sockets.in(socket.__room).emit('newUser',{data : 'Um usuário acabou de entrar'}); 
-	}); 
+			var userHashName = CryptoJS.MD5( new Date().toString()).toString();
+			
+			socket.hashName =  userHashName; 
+			socket.join(data.room); 
 
-	socket.on('msg',function(data){
-		console.log("mensagem em broadcast para a sala "+ socket.__room);
-		io.sockets.in(socket.__room).emit('msg',data); 
-	}); 
+			//alimentando array de usuários: 
+			var nameTemp = socketServer.factory.names(); 
+			socket.name = nameTemp; 
 
-	socket.on('disconnect', function(){
-		io.sockets.in(socket.__room).emit('leave',{ data: 'Usuários deixou a sala '+ socket.__room}); 
-	});
+			//Enviando informações da sala para o usuário: 
+			var roomInfo = {
+				linkVideo: socketServer.rooms[data.room].link_video,
+				roomName : socketServer.rooms[data.room].room_name 
+			}; 
+			socket.emit('getRoomInfo',roomInfo); 
 
-	socket.on('registerOwner', function(){
-		if(socket.__room == 'undefined') return; 
+			//Enviando informações do novo usuário na sala: 
+			var userInfo = {
+				hashName : socket.hashName, 
+				name     : nameTemp
+			}; 
+			io.sockets.in(socket.__room).emit('newUser',userInfo); 
+		}); 
+
+
+		//msg protocol: { userName : string, msg : string }
+		socket.on('msg',function(data){
+			console.log("mensagem em broadcast para a sala "+ socket.__room);
+			
+			var msgBuild ={
+				userName: socket.name, 
+				msg     : data.msg
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgBuild); 
+		}); 
+
+		// remove later: <------
+		// setInterval(function(){
+		// 	io.sockets.in(socket.__room).emit('msg',{userName : socket.name , msg: "Just a test."}); 
+		// },10000); 
+
+		socket.on('disconnect', function(){
+			var userInfo = {
+				hashName : socket.hashName, 
+				name     : socket.name
+			}; 
+
+			delete socketServer[socket.hashName]; 
+
+			io.sockets.in(socket.__room).emit('leave',userInfo); 
+		});
+
+		socket.on('registerOwner', function(){
+			if(socket.__room == 'undefined') return; 
 			rooms[socket.__room].registerOwner(socket.__hashName); 
 		});
 	}); 
 
-	socketServer.roomExists = function(hashId){
-		return ( this.rooms[hashId] != null  );
-	}
+socketServer.roomExists = function(hashId){
+	return ( this.rooms[hashId] != null  );
+}
 
-	socketServer.createRoom = function(name,url){
-		console.log(this.rooms); 
+socketServer.createRoom = function(name,url){
+	console.log(this.rooms); 
 	
 		//criando hash para a sala: 
 		var data = new Date().toString; 

@@ -34,6 +34,13 @@
          	margin-top: -188px;
          }
 
+         #chat_content{
+         	height: 350px; 
+         	width: 305;
+         	overflow-y: scroll; 
+         	overflow-x: hidden;
+         }
+
     </style>
 </head>
 <body>
@@ -62,10 +69,10 @@
 	</div>
 
 	<div class="row" style="margin-top:-15px" >
-	<div class="col s12 valign-wrapper">
+	<div class="col s12 valign-wrapper" id="avatar_content">
 		
 		<!-- <div class="chip"> -->
-		 <span class="tooltipped animated infinite swing center-align" data-position="bottom" data-delay="50" data-tooltip="Marcos"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
+		 <!-- <span class="tooltipped animated infinite swing center-align" data-position="bottom" data-delay="50" data-tooltip="Marcos"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
 
 		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Ferdinand"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
 
@@ -83,7 +90,7 @@
 
 		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Oliver"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
 
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Roy"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
+		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Roy"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span> -->
 
 		 
 	</div>
@@ -123,7 +130,7 @@
       <div class="col s4">
       	<div class="row ">
 				<div class="col s12 ">
-					<ul class="collection" style="margin:0">
+					<ul id="chat_content" class="collection" style="margin:0">
 					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Lorem ipsum dolor sit amet, consusmod.</small></li>
 
 					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Loremusmod.</small></li>
@@ -140,7 +147,7 @@
 					<small style="margin:0;"><i id="isTyping">Allyson is typing...</i></small>
 					
 					
-					<input id="text" type="text" class="validate">
+					<input id="input_box" type="text" class="validate">
 					
 				</div>
 			</div>	
@@ -199,61 +206,6 @@
  <script src="../js/session_app.js"></script>
  <script src="../socket.io/socket.io.js"></script>
  <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>
- <script type="text/javascript">
-
- 	// splashscrean
- 	var SplashScrean = function(){
- 		this.RATE = 1000; 
- 	}; 
-
- 	SplashScrean.prototype.show = function(){
- 		$("#splashscrean").fadeIn(this.RATE); 
- 	}
-
- 	SplashScrean.prototype.hide = function(){
- 		$("#splashscrean").fadeOut(this.RATE); 
- 	} 
-
- 	// Teste socket
- 	 var socket = io(window.location.origin);
-
-	 socket.on('connect', function(data){
-	   socket.emit('enterRoom', { room: hashId });
-	 }); 
-
-	  socket.on('msg', function (data) {
-	    console.log("Msg>__ "+data.data);
-	    Materialize.toast('Nova mensagem: '+ data.data, 4000); 
-	  });
-
-	  socket.on('newUser', function(data){
-	  	console.log(data.data); 
-	  	Materialize.toast('Novo usuário na sala', 4000); 
-	  }); 
-
-	  socket.on('leave', function(data){
-	  	console.log(data.data); 
-	  	Materialize.toast('Usuário saiu da sala', 4000); 
-	  });
-
-	  socket.on('reconnect_attempt', function(){
-	  	Materialize.toast('Socket Reconectando', 4000); 
-	  }); 
-
-	  socket.on('reconnect', function(){
-	  	Materialize.toast('Conexão reestabelecida', 4000);
-	  }); 
-
-	  function sendMsg(msg){
-	  	socket.emit('msg',{ data : msg } ); 
-	  }
-
- 	$(document).ready(function(){ 
- 		var splash = new SplashScrean(); 
- 		setTimeout(function(){
- 			splash.hide();  
- 		},10000); 
- 	}); 
- </script>
+ <script src="../js/app.js"></script>
 </body>
 </html>
