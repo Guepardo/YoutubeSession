@@ -38,7 +38,7 @@ $(document).ready(function(){
 
  	socket.on('getRoomInfo',function(data){
  		Materialize.toast(JSON.stringify(data), 4000);
- 		session.start(data.linkVideo,0,'large'); 
+ 		session.start(data.linkVideo,0,'small'); 
  	}); 
 
  	socket.on('onPlay',function(data){
@@ -58,6 +58,10 @@ $(document).ready(function(){
 
  	socket.on('onBuffering',function(data){
  	});
+
+ 	socket.on('avatarStatusChange',function(data){
+ 		session.avatarStatusChange(data); 
+ 	});	
 
  	function sendMsg(msg){
  		socket.emit('msg',{ data : msg } ); 

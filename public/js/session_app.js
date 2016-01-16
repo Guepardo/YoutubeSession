@@ -18,7 +18,7 @@ function onYouTubeIframeAPIReady() {
 //App lib
 var WindowSession = function(socket){
 	const FRENQUENCY_INTERVAL = 200; 
-	const DELAY_FADE 			= 500;
+	const DELAY_FADE 		  = 1500;
 
 	var self    = this; 
 	self.users  = []; 
@@ -56,7 +56,7 @@ WindowSession.prototype.start = function(videoLink, startSeconds, quality){
 }; 
 
 WindowSession.prototype.newAvatar = function(data){
-	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite swing center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://lorempixel.com/36/36/" alt="'+data.name+'"></span>'; 
+	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://lorempixel.com/36/36/" alt="'+data.name+'"></span>'; 
 	$('#avatar_content').append(tag);
 	$('#'+data.hashName).fadeIn(this.DELAY_FADE);  
 	$('.tooltipped').tooltip({delay: 50});
@@ -73,8 +73,35 @@ WindowSession.prototype.removeAvatar = function(hashName){
 	},this.DELAY_FADE+200); 
 }; 
 
-WindowSession.prototype.avatarStatusChange = function(){
-	
+WindowSession.prototype.avatarStatusChange = function(data){
+	//Event      |   Class
+	//Buffering  |   flash
+	//Pause      |   shake
+	//Stop       |   tada
+    //Play       |   bounce
+
+    //chossing class css
+    var cssClass = ''; 
+
+    switch(data.action){
+    	case 'Buffering': 
+    	cssClass = 'flash'; 
+    	break; 
+    	case 'Pause': 
+    	cssClass = 'shake'; 
+    	break; 
+    	case 'Stop': 
+    	cssClass = 'tada'; 
+    	break; 
+    	case 'Play': 
+    	cssClass = 'bounce'; 
+
+    }
+
+    $('#'+data.hashName).addClass(cssClass); 
+    setTimeout(function(){
+    	$('#'+data.hashName).removeClass(cssClass);		
+    },1000); 
 }; 
 
 WindowSession.prototype.newMessage = function(data){

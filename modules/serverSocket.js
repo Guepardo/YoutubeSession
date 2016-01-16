@@ -59,10 +59,10 @@ socketServer.init = function(server) {
 			io.sockets.in(socket.__room).emit('msg',msgBuild); 
 		}); 
 
-		// remove later: <------
+		//remove later: <------
 		// setInterval(function(){
 		// 	io.sockets.in(socket.__room).emit('msg',{userName : socket.name , msg: "Just a test."}); 
-		// },10000); 
+		// },100); 
 
 		socket.on('disconnect', function(){
 			var userInfo = {
@@ -96,6 +96,9 @@ socketServer.init = function(server) {
 				msg      : "Alguém acabou de dar play"
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+
+			socketServer.avatarStatusChange('Play',socket.hashName,socket.__room);  
+
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
 
@@ -109,6 +112,9 @@ socketServer.init = function(server) {
 				msg      : "Alguém acabou de dar pause"
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+
+			socketServer.avatarStatusChange('Pause',socket.hashName,socket.__room);  
+
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
 
@@ -125,6 +131,9 @@ socketServer.init = function(server) {
 				msg      : "Alguém acabou de dar stop"
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+
+			socketServer.avatarStatusChange('Stop',socket.hashName,socket.__room);  
+
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
 
@@ -138,6 +147,9 @@ socketServer.init = function(server) {
 				msg      : "Alguém acabou de dar buffering"
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+
+			socketServer.avatarStatusChange('Buffering',socket.hashName,socket.__room); 
+
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
 
@@ -148,6 +160,14 @@ socketServer.init = function(server) {
 socketServer.roomExists = function(hashId){
 	return ( this.rooms[hashId] != null  );
 }
+
+socketServer.avatarStatusChange = function(action,hashName,room){
+	var avatarChange = {
+		hashName :   hashName, 
+		action   :   action
+	};
+	io.sockets.in(room).emit('avatarStatusChange', avatarChange); 
+}; 
 
 socketServer.createRoom = function(name,url){
 	console.log(this.rooms); 
