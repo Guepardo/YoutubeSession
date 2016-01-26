@@ -33,4 +33,3 @@ var server = http.createServer(app);
 server.listen(port);  
 socket.init(server); 
 
-socket.createRoom('1234'); 

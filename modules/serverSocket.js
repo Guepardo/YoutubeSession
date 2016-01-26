@@ -59,7 +59,7 @@ socketServer.init = function(server) {
 			io.sockets.in(socket.__room).emit('msg',msgBuild); 
 		}); 
 
-		//remove later: <------
+		// remove later: <------
 		// setInterval(function(){
 		// 	io.sockets.in(socket.__room).emit('msg',{userName : socket.name , msg: "Just a test."}); 
 		// },100); 
@@ -76,6 +76,7 @@ socketServer.init = function(server) {
 
 		socket.on('registerOwner', function(){
 			if(socket.__room == 'undefined') return; 
+			
 			//Adicionando proprietário da sala: 
 			if(!socketServer.rooms[socket.__room].ownerExists())
 				socketServer.rooms[socket.__room].registerOwner(socket.hashName); 
@@ -83,7 +84,7 @@ socketServer.init = function(server) {
 				return; 
 
 			var msgBuild ={
-				userName: socket.name, 
+				userName:  socket.name, 
 				msg     : 'Registrado como proprietário da sala'
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgBuild); 
@@ -122,6 +123,17 @@ socketServer.init = function(server) {
 		}); 
 
 		socket.on('onSeek',function(data){
+			console.log("onSeek" ); 
+			var msgTemp = {
+				userName : 'Server', 
+				msg      : "Alterou a posição do vídeo."
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+
+			socket.broadcast.to(socket.__room).emit('onSeek',{time : data.time});
 		}); 
 
 		socket.on('onStop',function(data){

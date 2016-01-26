@@ -1,6 +1,6 @@
 $(document).ready(function(){
  	// Teste socket
- 	var socket = io(window.location.origin);
+ 	var socket  = io(window.location.origin);
  	var session = new WindowSession(socket); 
 
  	//Registrando o proprietário da sala: 
@@ -50,6 +50,7 @@ $(document).ready(function(){
  	}); 
 
  	socket.on('onSeek',function(data){
+ 		session.seekTo(data.time); 
  	}); 
 
  	socket.on('onStop',function(data){
@@ -73,6 +74,14 @@ $(document).ready(function(){
  			socket.emit('msg',{msg : $('#input_box').val()}); 
  			session.clearInputBox(); 
  		}
+ 	}); 
+
+ 	$('#volume').change(function(){
+ 		session.setVolume($('#volume').val());
+ 	}); 
+
+ 	$('#progress').change(function(){
+ 		session.seekTo($('#progress').val());
  	}); 
 
  	// splashscrean

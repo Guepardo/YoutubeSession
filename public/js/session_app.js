@@ -8,7 +8,7 @@ function onYouTubeIframeAPIReady() {
 		videoId: '', 
 		playerVars: {
 			'autoplay': 0, 
-			'controls':  1
+			'controls':  0
 		}
 	});
 }
@@ -24,7 +24,10 @@ var WindowSession = function(socket){
 	self.users  = []; 
 	self.socket = socket; 
 
-	self.stageMachine = -3; 
+	self.stageMachine   = -3; 
+	self.video_duration = -1; 
+
+	self.isPlay = false; 
   // creating interval to check changes on youtube player: 	
   setInterval(function(){
   	switch(player.getPlayerState()){
@@ -32,28 +35,57 @@ var WindowSession = function(socket){
 		break; 
 		case  0: //encerrado
 		self.onStop(); 
+		self.isPlay = false;
 		break; 
 		case  1: //em reprodução
 		self.onPlay(); 
+		self.isPlay = true;
 		break; 
 		case  2: //em pausa
 		self.onPause(); 
+		self.isPlay = false;
 		break; 
 		case  3: //armazenando em buffer
 		self.onBuffering(); 
+		self.isPlay = false;
 		break; 
 		case  5: //vídeo indicado
 		break; 
 	}
 },FRENQUENCY_INTERVAL); 
 
+setInterval(function(){
+	//Pegando informações da duração do vídeo: 
+	if(self.video_duration == -1 ){
+		if(player.getDuration() != 0){
+			var temp = player.getDuration() ;
+			var progress = $('#progress'); 
+			var duration =   parseInt(player.getDuration()); 
+			progress.attr('max',duration); 
+			progress.attr('min',0); 
+
+			self.video_duration = duration; 
+
+			player.setVolume(30); 
+		}
+	}else{
+		//Atualizar tempo de execução: 
+		$('#progress').val(parseInt(player.getCurrentTime())); 
+	}
+},1000); 
+// Um segundo é o tempo ideal para a barra de progresso não travar.
+
 }; 
 
 WindowSession.prototype.start = function(videoLink, startSeconds, quality){
 	setTimeout(function(){
 		player.cueVideoById(videoLink,startSeconds,quality); 
+		//adicionnando informações a barra de progresso: 
+		$('#progress').attr('max', parseInt(player.getDuration()));
+		console.log("Essa merda deveria estar aparecendo"+ player.getDuration());
 	},4000); 
 }; 
+
 
 WindowSession.prototype.newAvatar = function(data){
 	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://lorempixel.com/36/36/" alt="'+data.name+'"></span>'; 
@@ -71,6 +103,11 @@ WindowSession.prototype.removeAvatar = function(hashName){
 	setTimeout(function(){
 		$('#'+hashName).remove(); 
 	},this.DELAY_FADE+200); 
+}; 
+
+WindowSession.prototype.seekTo = function(time){
+	player.seekTo(time,true); 
+	this.socket.emit('onSeek',{ time : time}); 
 }; 
 
 WindowSession.prototype.avatarStatusChange = function(data){
@@ -105,12 +142,16 @@ WindowSession.prototype.avatarStatusChange = function(data){
 }; 
 
 WindowSession.prototype.newMessage = function(data){
-	var tag = '<li class="collection-item" style="margin-top:0;width:100%"> <strong>'+data.userName+'</strong> <small>'+data.msg+'</small></li>'; 
+	var tag = '<li class="collection-item msgItem"> <strong>'+data.userName+':</strong> <small> '+data.msg+'</small></li>'; 
 	$('#chat_content').append(tag); 
 
 	var tempHeight = $('#chat_content').height()+100; 
 	console.log(tempHeight); 
 	$("#chat_content").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
+}; 
+
+WindowSession.prototype.setVolume = function(value){
+	player.setVolume(value);
 }; 
 
 WindowSession.prototype.playerStop = function(){
@@ -124,10 +165,6 @@ WindowSession.prototype.playerPause = function(){
 WindowSession.prototype.playerPlay = function(){
 	player.playVideo(); 
 }; 	
-
-WindowSession.prototype.playerSeek = function(){
-	
-}; 
 
 WindowSession.prototype.typingChange = function(){
 	
@@ -164,4 +201,8 @@ WindowSession.prototype.onBuffering = function(){
 	console.log("Buffering");
 	this.socket.emit('onBuffering'); 
 	this.stageMachine = 3;  
+}; 
+
+WindowSession.prototype.isPlaying = function(){
+	return self.isPlay; 
 }; 
