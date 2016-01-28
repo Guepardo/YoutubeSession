@@ -9,7 +9,6 @@ var socketServer ={};
 socketServer.init = function(server) {
 	socketServer.io = null; 
 	socketServer.rooms = [];
-	socketServer.users = []; 
 	socketServer.io = io = new Server (server); 
 
 	socketServer.factory = new Factory(); 
@@ -32,11 +31,28 @@ socketServer.init = function(server) {
 			var nameTemp = socketServer.factory.names(); 
 			socket.name = nameTemp; 
 
+			var currentRoom = socketServer.rooms[socket.__room]; 
 			//Enviando informações da sala para o usuário: 
+
+			var allUsers = currentRoom.getAllUsers();
+			var users = new Array();
+
+			for(var key in allUsers){
+				var user = {};
+				user.hashName = key; 
+				user.name     = allUsers[key]; 
+
+				users.push(user); 
+			}
+	
 			var roomInfo = {
-				linkVideo: socketServer.rooms[data.room].link_video,
-				roomName : socketServer.rooms[data.room].room_name 
+				linkVideo: currentRoom.link_video,
+				roomName : currentRoom.room_name, 
+				users    : users, 
+				play     : currentRoom.isPlay(), 
+				timeout  : currentRoom.getTimeout()+4//Player começar a avançar 4 segunda a frente 
 			}; 
+
 			socket.emit('getRoomInfo',roomInfo); 
 
 			//Enviando informações do novo usuário na sala: 
@@ -44,6 +60,8 @@ socketServer.init = function(server) {
 				hashName : socket.hashName, 
 				name     : nameTemp
 			}; 
+
+			currentRoom.newUser(socket.hashName, socket.name); 
 			io.sockets.in(socket.__room).emit('newUser',userInfo); 
 		}); 
 
@@ -69,7 +87,8 @@ socketServer.init = function(server) {
 				hashName : socket.hashName, 
 				name     : socket.name
 			}; 
-			delete socketServer[socket.hashName]; 
+			// delete socketServer[socket.hashName]; 
+			socketServer.rooms[socket.__room].removeUser(socket.hashName); 
 
 			io.sockets.in(socket.__room).emit('leave',userInfo); 
 		});
@@ -100,10 +119,17 @@ socketServer.init = function(server) {
 
 			socketServer.avatarStatusChange('Play',socket.hashName,socket.__room);  
 
+			var currentRoom = socketServer.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+			if(!currentRoom.isOwner(socket.hashName))return;
 
-			io.sockets.in(socket.__room).emit('onPlay'); 
+			io.sockets.in(socket.__room).emit('onPlay');
+
+			if(!currentRoom.isStarted()) 
+				currentRoom.startSession(socket.hashName, data.duration);  
+			currentRoom.setPlay(); 
+			console.log(data); 
+
 		}); 
 
 		socket.on('onPause',function(data){
@@ -116,10 +142,12 @@ socketServer.init = function(server) {
 
 			socketServer.avatarStatusChange('Pause',socket.hashName,socket.__room);  
 
+			var currentRoom = socketServer.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+			if(!currentRoom.isOwner(socket.hashName))return;
 
 			io.sockets.in(socket.__room).emit('onPause'); 
+			currentRoom.setPause(); 
 		}); 
 
 		socket.on('onSeek',function(data){
@@ -130,9 +158,10 @@ socketServer.init = function(server) {
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 
+			var currentRoom = socketServer.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
-
+			if(!currentRoom.isOwner(socket.hashName))return;
+			currentRoom.seekTimeout(socket.hashName, data.time); 
 			socket.broadcast.to(socket.__room).emit('onSeek',{time : data.time});
 		}); 
 
@@ -167,6 +196,18 @@ socketServer.init = function(server) {
 
 			io.sockets.in(socket.__room).emit('onBuffering'); 
 		}); 
+
+		socket.on('onThumbUp', function(){
+			console.log('onThumbUp'); 
+
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "<3"
+			}
+
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			socketServer.avatarStatusChange('ThumbUp',socket.hashName,socket.__room); 
+		})
 	}); 
 
 socketServer.roomExists = function(hashId){
@@ -185,7 +226,7 @@ socketServer.createRoom = function(name,url){
 	console.log(this.rooms); 
 	
 		//criando hash para a sala: 
-		var data = new Date().toString; 
+		var data     = new Date().toString(); 
 		var hashName = CryptoJS.MD5(name + data).toString(); 
 
 		this.rooms[hashName] = new Room();  

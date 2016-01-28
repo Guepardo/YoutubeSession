@@ -77,12 +77,18 @@ setInterval(function(){
 
 }; 
 
-WindowSession.prototype.start = function(videoLink, startSeconds, quality){
+WindowSession.prototype.start = function(videoLink, startSeconds, quality, play, users){
+	var self = this; 
 	setTimeout(function(){
-		player.cueVideoById(videoLink,startSeconds,quality); 
-		//adicionnando informações a barra de progresso: 
-		$('#progress').attr('max', parseInt(player.getDuration()));
-		console.log("Essa merda deveria estar aparecendo"+ player.getDuration());
+		//(data.linkVideo,0,'small',data.play,data.users); 
+		if(play)
+			player.loadVideoById(videoLink,startSeconds,quality); 
+		else
+			player.cueVideoById(videoLink,startSeconds,quality); 
+
+		//Adicionando usuários na barra superior: 
+		for(var a = 0; a < users.length; a++)
+			self.newAvatar(users[a]); 
 	},4000); 
 }; 
 
@@ -116,6 +122,7 @@ WindowSession.prototype.avatarStatusChange = function(data){
 	//Pause      |   shake
 	//Stop       |   tada
     //Play       |   bounce
+    //ThumbUp    |   rubberBand
 
     //chossing class css
     var cssClass = ''; 
@@ -132,6 +139,9 @@ WindowSession.prototype.avatarStatusChange = function(data){
     	break; 
     	case 'Play': 
     	cssClass = 'bounce'; 
+    	break; 
+    	case 'ThumbUp': 
+    	cssClass = 'rubberBand'; 
 
     }
 
@@ -149,6 +159,10 @@ WindowSession.prototype.newMessage = function(data){
 	console.log(tempHeight); 
 	$("#chat_content").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
 }; 
+
+WindowSession.prototype.onThumbUp = function(){
+	this.socket.emit('onThumbUp'); 
+}
 
 WindowSession.prototype.setVolume = function(value){
 	player.setVolume(value);
@@ -173,14 +187,14 @@ WindowSession.prototype.typingChange = function(){
 WindowSession.prototype.onPlay = function(){
 	if(this.stageMachine == 1 )return; 
 	console.log("Playing");
-	this.socket.emit('onPlay',{});  
+	this.socket.emit('onPlay',{ duration : player.getDuration()});  
 	this.stageMachine = 1;  
 }; 
 
 WindowSession.prototype.onPause = function(){
 	if(this.stageMachine == 2 )return; 
 	console.log("Pause"); 
-	this.socket.emit('onPause');
+	this.socket.emit('onPause',{currentTime: player.getCurrentTime()});
 	this.stageMachine = 2;   
 }; 
 

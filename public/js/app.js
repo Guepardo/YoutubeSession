@@ -38,7 +38,7 @@ $(document).ready(function(){
 
  	socket.on('getRoomInfo',function(data){
  		Materialize.toast(JSON.stringify(data), 4000);
- 		session.start(data.linkVideo,0,'small'); 
+ 		session.start(data.linkVideo,data.timeout,'small',data.play,data.users); 
  	}); 
 
  	socket.on('onPlay',function(data){
@@ -82,6 +82,10 @@ $(document).ready(function(){
 
  	$('#progress').change(function(){
  		session.seekTo($('#progress').val());
+ 	}); 
+
+ 	$('#thumb_up').click(function(){
+ 		session.onThumbUp();
  	}); 
 
  	// splashscrean
