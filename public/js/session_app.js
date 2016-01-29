@@ -94,7 +94,7 @@ WindowSession.prototype.start = function(videoLink, startSeconds, quality, play,
 
 
 WindowSession.prototype.newAvatar = function(data){
-	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://lorempixel.com/36/36/" alt="'+data.name+'"></span>'; 
+	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://www.gravatar.com/avatar/c'+data.hashName+'?s=40&d=identicon&f=y" alt="'+data.name+'"></span>'; 
 	$('#avatar_content').append(tag);
 	$('#'+data.hashName).fadeIn(this.DELAY_FADE);  
 	$('.tooltipped').tooltip({delay: 50});
