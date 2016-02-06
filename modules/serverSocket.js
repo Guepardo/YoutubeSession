@@ -60,7 +60,6 @@ socketServer.init = function(server) {
 				hashName : socket.hashName, 
 				name     : nameTemp
 			}; 
-
 			currentRoom.newUser(socket.hashName, socket.name); 
 			io.sockets.in(socket.__room).emit('newUser',userInfo); 
 		}); 
@@ -207,7 +206,29 @@ socketServer.init = function(server) {
 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 			socketServer.avatarStatusChange('ThumbUp',socket.hashName,socket.__room); 
-		})
+		}); 
+
+		socket.on('typeBegin', function(){
+			var currentRoom = socketServer.rooms[socket.__room]; 
+			currentRoom.addUserFromTypingList(socket.name); 
+			var msg = currentRoom.whoIsTyping(); 
+			var msgTemp ={
+				msg : msg
+			};
+
+			io.sockets.in(socket.__room).emit('changeTyping',msgTemp); 
+		}); 
+
+		socket.on('typeEnd',function(){
+			var currentRoom = socketServer.rooms[socket.__room]; 
+			currentRoom.removeUserFromTypingList(socket.name); 
+			var msg = currentRoom.whoIsTyping(); 
+			var msgTemp ={
+				msg : msg
+			};
+
+			io.sockets.in(socket.__room).emit('changeTyping',msgTemp); 
+		}); 
 	}); 
 
 socketServer.roomExists = function(hashId){

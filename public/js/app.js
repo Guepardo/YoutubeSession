@@ -49,6 +49,10 @@ $(document).ready(function(){
  		session.playerPause(); 
  	}); 
 
+ 	socket.on('changeTyping',function(data){
+ 		session.changeTyping(data.msg); 
+ 	}); 
+
  	socket.on('onSeek',function(data){
  		session.seekTo(data.time); 
  	}); 
@@ -69,11 +73,29 @@ $(document).ready(function(){
  	}
 
  	//another behavior: 
+ 	var isTyping = false; 
+ 	var typingTimeout; 
  	$('#input_box').keypress(function(event){
  		if(event.which == 13){
  			socket.emit('msg',{msg : $('#input_box').val()}); 
  			session.clearInputBox(); 
+ 			return;
  		}
+
+ 		clearTimeout(typingTimeout); 
+
+ 		if(!isTyping){
+ 			console.log('Está digitando'); 
+ 			isTyping = true; 
+ 			session.typeBegin(); 
+ 		}
+ 		typingTimeout = setTimeout(function(){
+ 			if(isTyping){
+ 				isTyping = false; 
+ 				console.log("Parou de ditigar");
+ 				session.typeEnd();  
+ 			}
+ 		},700); 
  	}); 
 
  	$('#volume').change(function(){

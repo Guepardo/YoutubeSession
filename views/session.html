@@ -41,13 +41,20 @@
 			margin-top: -188px;
 		}
 
+		body{
+			background-color: #f5f5f5; 
+		}
 		#chat_content{
+			height: auto;
+		}
+
+		#div_chat{
+			background-color: white; 
 			height: 367px; 
-			width: 305;
+			width: 305px;
 			overflow-y: scroll; 
 			overflow-x: hidden;
 		}
-
 		.marginZero{
 			margin:0 !important;
 		}
@@ -56,6 +63,10 @@
 			margin-top:0 !important;
 			width:100%;
 			padding-left:5px !important;
+		}
+
+		.container{
+			margin-top:25px;
 		}
 
 	</style>
@@ -73,7 +84,7 @@
 
 	</script>
 	<!-- Navegação -->
-	<div class="navbar-fixed">
+	<div class="navbar-fixed" style="display:none;">
 		<nav class="indigo lighten-1">
 			<div class="nav-wrapper">
 				<a href="/" class="brand-logo white-text">YouSession</a>
@@ -91,33 +102,14 @@
 		<!-- pessoas na sessão -->
 		<div class="row" style="margin:0;">
 			<div class="col s12" style="padding:0;">
-				<h6 >Assistindo <strong id="nome_sala">Nome da sala</strong> com vocês:</h6>
+				<h6 >Assistindo a sala <strong id="nome_sala">Alguma coisa aqui</strong> com você:</h6>
 			</div>
 		</div>
 
 		<div class="row" style="margin-top:-15px" >
 			<div class="col s12 valign-wrapper" id="avatar_content">
 
-				<!-- <div class="chip"> -->
-		 <!-- <span class="tooltipped animated infinite swing center-align" data-position="bottom" data-delay="50" data-tooltip="Marcos"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Ferdinand"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Allyson"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Lorena"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Etta"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Bruce"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Barbara"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Jason"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Oliver"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span>
-
-		 <span class="tooltipped animated infinite swing" data-position="bottom" data-delay="50" data-tooltip="Roy"><img class="circle" src="http://lorempixel.com/36/36/" alt="Contact Person"></span> -->
+		
 
 		 
 		</div>
@@ -170,8 +162,10 @@
 		<!-- chat -->
 		<div class="col s4">
 			<div class="row ">
-				<div class="col s12 ">
-					<ul id="chat_content" class="collection" style="margin:0">
+				<div class="col s12">
+
+					<div id="div_chat">
+						<ul id="chat_content" class="collection" style="margin:0">
 					<!-- <li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Lorem ipsum dolor sit amet, consusmod.</small></li>
 
 					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Loremusmod.</small></li>
@@ -185,7 +179,9 @@
 
 				</ul>
 
-				<small style="margin:0;"><i id="isTyping">Allyson is typing...</i></small>
+					</div>
+					
+				<small style="margin:0;"><i id="isTyping"></i></small>
 
 
 				<input id="input_box" type="text" class="validate">

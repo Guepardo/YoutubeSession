@@ -12,6 +12,51 @@ var Room = function(){
 	this.timeout_session =  0; 
 
 	this.users = []; 
+
+	this.usersTyping = new Array(); 
+}; 
+
+Room.prototype.whoIsTyping = function(name){
+	var is  = "está"; 
+	var are = "estão"; 
+
+	var temp  = ""; 
+	var count = 0; 
+	for( var a = 0 ; a < this.usersTyping.length; a++){
+		if(this.usersTyping[a] != name){
+
+			if( this.usersTyping.length > 2 && (a + 1 != this.usersTyping.legth))
+			temp += ""+this.usersTyping[a]+", "; 
+			else
+			temp += ""+this.usersTyping[a]+" e "; 
+
+			count++; 
+		}
+	}
+
+	if(temp == "") return ""; 
+
+	if(count < 4)
+		temp = temp.substring(0,temp.length-2); 
+	else
+		temp = "muitos"; 
+	
+	if(count < 2 )
+		temp += " "+is+" digitando..."; 
+	else
+		temp += " "+are+" digitando...";
+	return temp; 
+}
+
+Room.prototype.addUserFromTypingList = function(name){
+	this.usersTyping.push(name); 
+	console.log(this.usersTyping); 
+}; 
+
+Room.prototype.removeUserFromTypingList = function(name){
+	var idx = this.usersTyping.indexOf(name); 
+	if(idx != -1)
+		this.usersTyping.splice(idx,1); 
 }; 
 
 Room.prototype.newUser = function(hashName, nome){

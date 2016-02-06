@@ -18,7 +18,7 @@ function onYouTubeIframeAPIReady() {
 //App lib
 var WindowSession = function(socket){
 	const FRENQUENCY_INTERVAL = 200; 
-	const DELAY_FADE 		  = 1500;
+	const DELAY_FADE 		  = 500;
 
 	var self    = this; 
 	self.users  = []; 
@@ -152,12 +152,17 @@ WindowSession.prototype.avatarStatusChange = function(data){
 }; 
 
 WindowSession.prototype.newMessage = function(data){
-	var tag = '<li class="collection-item msgItem"> <strong>'+data.userName+':</strong> <small> '+data.msg+'</small></li>'; 
+	var tag = '<li class="collection-item msgItem"> <strong>'+data.userName+':</strong> <small class="text-justify"> '+data.msg+'</small></li>'; 
 	$('#chat_content').append(tag); 
 
 	var tempHeight = $('#chat_content').height()+100; 
 	console.log(tempHeight); 
-	$("#chat_content").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
+	$("#div_chat").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
+
+	//reduzindo a carga
+
+	if($('#chat_content > li').size() >= 200 )
+		$('#chat_content > li').first().remove(); 	
 }; 
 
 WindowSession.prototype.onThumbUp = function(){
@@ -180,8 +185,16 @@ WindowSession.prototype.playerPlay = function(){
 	player.playVideo(); 
 }; 	
 
-WindowSession.prototype.typingChange = function(){
-	
+WindowSession.prototype.typeBegin = function(){
+	this.socket.emit('typeBegin'); 
+}
+
+WindowSession.prototype.typeEnd = function(){
+	this.socket.emit('typeEnd'); 
+}; 
+
+WindowSession.prototype.changeTyping = function(msg){
+	$('#isTyping').text(msg); 
 };
 
 WindowSession.prototype.onPlay = function(){
