@@ -76,11 +76,6 @@ socketServer.init = function(server) {
 			io.sockets.in(socket.__room).emit('msg',msgBuild); 
 		}); 
 
-		// remove later: <------
-		// setInterval(function(){
-		// 	io.sockets.in(socket.__room).emit('msg',{userName : socket.name , msg: "Just a test."}); 
-		// },100); 
-
 		socket.on('disconnect', function(){
 			var userInfo = {
 				hashName : socket.hashName, 
@@ -110,11 +105,7 @@ socketServer.init = function(server) {
 
 		socket.on('onPlay',function(data){
 			console.log("onPlay" ); 
-			var msgTemp = {
-				userName : socket.name, 
-				msg      : "Alguém acabou de dar play"
-			}; 
-			io.sockets.in(socket.__room).emit('msg',msgTemp); 
+			
 
 			socketServer.avatarStatusChange('Play',socket.hashName,socket.__room);  
 
@@ -127,18 +118,16 @@ socketServer.init = function(server) {
 			if(!currentRoom.isStarted()) 
 				currentRoom.startSession(socket.hashName, data.duration);  
 			currentRoom.setPlay(); 
-			console.log(data); 
-
+			
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar play"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 		}); 
 
 		socket.on('onPause',function(data){
 			console.log("onPause" ); 
-			var msgTemp = {
-				userName : socket.name, 
-				msg      : "Alguém acabou de dar pause"
-			}; 
-			io.sockets.in(socket.__room).emit('msg',msgTemp); 
-
 			socketServer.avatarStatusChange('Pause',socket.hashName,socket.__room);  
 
 			var currentRoom = socketServer.rooms[socket.__room]; 
@@ -147,58 +136,60 @@ socketServer.init = function(server) {
 
 			io.sockets.in(socket.__room).emit('onPause'); 
 			currentRoom.setPause(); 
+				var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar pause"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 		}); 
 
 		socket.on('onSeek',function(data){
 			console.log("onSeek" ); 
-			var msgTemp = {
-				userName : 'Server', 
-				msg      : "Alterou a posição do vídeo."
-			}; 
-			io.sockets.in(socket.__room).emit('msg',msgTemp); 
-
 			var currentRoom = socketServer.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!currentRoom.isOwner(socket.hashName))return;
 			currentRoom.seekTimeout(socket.hashName, data.time); 
 			socket.broadcast.to(socket.__room).emit('onSeek',{time : data.time});
+
+			var msgTemp = {
+				userName : 'Server', 
+				msg      : "Alterou a posição do vídeo."
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 		}); 
 
 		socket.on('onStop',function(data){
 			console.log("onStop" ); 
-			var msgTemp = {
-				userName : socket.name, 
-				msg      : "Alguém acabou de dar stop"
-			}; 
-			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 
 			socketServer.avatarStatusChange('Stop',socket.hashName,socket.__room);  
 
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
-
 			io.sockets.in(socket.__room).emit('onStop'); 
+			
+			var msgTemp = {
+				userName : socket.name, 
+				msg      : "Alguém acabou de dar stop"
+			}; 
+			io.sockets.in(socket.__room).emit('msg',msgTemp); 
 		}); 
 
 		socket.on('onBuffering',function(data){
 			console.log("onBuffering" ); 
+			socketServer.avatarStatusChange('Buffering',socket.hashName,socket.__room); 
+
+			//executar o comando apenas se o socket for do proprietário: 
+			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+			io.sockets.in(socket.__room).emit('onBuffering'); 
 			var msgTemp = {
 				userName : socket.name, 
 				msg      : "Alguém acabou de dar buffering"
 			}; 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
-
-			socketServer.avatarStatusChange('Buffering',socket.hashName,socket.__room); 
-
-			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
-
-			io.sockets.in(socket.__room).emit('onBuffering'); 
 		}); 
 
 		socket.on('onThumbUp', function(){
 			console.log('onThumbUp'); 
-
 			var msgTemp = {
 				userName : socket.name, 
 				msg      : "<3"
@@ -229,6 +220,21 @@ socketServer.init = function(server) {
 
 			io.sockets.in(socket.__room).emit('changeTyping',msgTemp); 
 		}); 
+
+		socket.on('verifySynchronization',function(data){
+			var currentRoom = socketServer.rooms[socket.__room]; 
+
+			if(!currentRoom.isSynchronized(data.currentTime) &&
+				currentRoom.isStarted()                    ){
+				//
+				socket.emit('onSeek',{time : currentRoom.getTimeout()}); 
+				var msgTemp = {
+					userName : 'Server', 
+					msg      : "Seu player foi sincronizado com o servidor."
+				}; 
+				socket.emit('msg',msgTemp); 
+			}
+		}); 	
 	}); 
 
 socketServer.roomExists = function(hashId){

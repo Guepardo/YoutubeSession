@@ -28,6 +28,9 @@ var WindowSession = function(socket){
 	self.video_duration = -1; 
 
 	self.isPlay = false; 
+
+	self.audio = new Audio('../audio/newuser.mp3'); 
+	self.audio.volume = 0.3; 
   // creating interval to check changes on youtube player: 	
   setInterval(function(){
   	switch(player.getPlayerState()){
@@ -75,10 +78,46 @@ setInterval(function(){
 },1000); 
 // Um segundo é o tempo ideal para a barra de progresso não travar.
 
+self.countMsgs = false; 
+self.msgUnRead = 0; 
+$('html').mouseover(function(){self.countMsgs = false;}); 
+$('html').mouseout(function(){
+	self.countMsgs =  true;
+	msgUnRead = 0; 
+	$('title').text("YouSession"); 
+});
+
 }; 
 
-WindowSession.prototype.start = function(videoLink, startSeconds, quality, play, users){
+WindowSession.prototype.newMessage = function(data){
+	var tag = '<li class="collection-item msgItem"> <strong>'+data.userName+':</strong> <small class="msgText"> '+data.msg+'</small></li>'; 
+	$('#chat_content').append(tag); 
+
+	var tempHeight = $('#chat_content').height()+100; 
+	console.log(tempHeight); 
+	$("#div_chat").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
+
+	//reduzindo a carga
+
+	if($('#chat_content > li').size() >= 200 )
+		$('#chat_content > li').first().remove(); 	
+
+	if(this.countMsgs){
+		msgUnRead++; 
+		$('title').text("YouSession ["+msgUnRead+"]"); 
+	}
+}; 
+
+WindowSession.prototype.verifySynchronization = function(){
+	var currentTime = parseInt(player.getCurrentTime()); 
+	this.socket.emit('verifySynchronization',{currentTime: currentTime}); 
+}
+
+WindowSession.prototype.start = function(videoLink, startSeconds, quality, play, users, roomName){
 	var self = this; 
+	//registrando nome da sala: 
+	$('#room_name').text(roomName); 
+
 	setTimeout(function(){
 		//(data.linkVideo,0,'small',data.play,data.users); 
 		if(play)
@@ -94,10 +133,11 @@ WindowSession.prototype.start = function(videoLink, startSeconds, quality, play,
 
 
 WindowSession.prototype.newAvatar = function(data){
-	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle" src="http://www.gravatar.com/avatar/c'+data.hashName+'?s=40&d=identicon&f=y" alt="'+data.name+'"></span>'; 
+	var tag = '<span style="display:none;" id="'+data.hashName+'"class="tooltipped animated infinite center-align" data-position="bottom" data-delay="50" data-tooltip="'+data.name+'"><img class="circle avatar" src="http://www.gravatar.com/avatar/c'+data.hashName+'?s=40&d=identicon&f=y" alt="'+data.name+'"></span>'; 
 	$('#avatar_content').append(tag);
 	$('#'+data.hashName).fadeIn(this.DELAY_FADE);  
 	$('.tooltipped').tooltip({delay: 50});
+	this.audio.play(); 
 }; 
 
 WindowSession.prototype.clearInputBox = function(){
@@ -149,20 +189,6 @@ WindowSession.prototype.avatarStatusChange = function(data){
     setTimeout(function(){
     	$('#'+data.hashName).removeClass(cssClass);		
     },1000); 
-}; 
-
-WindowSession.prototype.newMessage = function(data){
-	var tag = '<li class="collection-item msgItem"> <strong>'+data.userName+':</strong> <small class="text-justify"> '+data.msg+'</small></li>'; 
-	$('#chat_content').append(tag); 
-
-	var tempHeight = $('#chat_content').height()+100; 
-	console.log(tempHeight); 
-	$("#div_chat").unbind().animate({ scrollTop: tempHeight }, this.DELAY_FADE);
-
-	//reduzindo a carga
-
-	if($('#chat_content > li').size() >= 200 )
-		$('#chat_content > li').first().remove(); 	
 }; 
 
 WindowSession.prototype.onThumbUp = function(){

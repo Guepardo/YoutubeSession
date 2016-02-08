@@ -28,10 +28,11 @@
 			background-color: white;
 		}
 
-		img{
+		.avatar{
 			width:30px;
 			height:30px;
 		}
+
 		#splashscrean > img{
 			position: relative; 
 			top:50%;
@@ -44,6 +45,10 @@
 		body{
 			background-color: #f5f5f5; 
 		}
+
+		.msgText{
+			font-size: 100%; 
+		}
 		#chat_content{
 			height: auto;
 		}
@@ -51,7 +56,7 @@
 		#div_chat{
 			background-color: white; 
 			height: 367px; 
-			width: 305px;
+			/*width: 305px;*/
 			overflow-y: scroll; 
 			overflow-x: hidden;
 		}
@@ -102,16 +107,12 @@
 		<!-- pessoas na sessão -->
 		<div class="row" style="margin:0;">
 			<div class="col s12" style="padding:0;">
-				<h6 >Assistindo a sala <strong id="nome_sala">Alguma coisa aqui</strong> com você:</h6>
+				<h6 >Assistindo a sala <strong id="room_name">Alguma coisa aqui</strong> com você:</h6>
 			</div>
 		</div>
 
 		<div class="row" style="margin-top:-15px" >
 			<div class="col s12 valign-wrapper" id="avatar_content">
-
-		
-
-		 
 		</div>
 		
 	</div>
@@ -166,18 +167,9 @@
 
 					<div id="div_chat">
 						<ul id="chat_content" class="collection" style="margin:0">
-					<!-- <li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Lorem ipsum dolor sit amet, consusmod.</small></li>
+					
 
-					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Loremusmod.</small></li>
-
-
-					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Lorem ipsum dolor sit amet, consec</small></li>
-
-					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Mariaa Silvaa</strong> <small>lorempixel Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</small></li>
-
-					<li class="collection-item" style="margin-top:0;width:100%"> <strong>Allyson Maciel</strong> <small>lorempixel Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod.</small></li> -->
-
-				</ul>
+						</ul>
 
 					</div>
 					
@@ -196,7 +188,7 @@
 
 <!-- splash screan -->
 <div id="splashscrean">	
-	<img src="http://www.blackbox.sa.com/app/webroot/img/loading.gif">
+	<img src="http://indiaatozaddresses.com/images/icons/loading.gif">
 </div>
 
 <script type="text/javascript" src="https://www.youtube.com/iframe_api"></script>

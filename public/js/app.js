@@ -1,3 +1,4 @@
+
 $(document).ready(function(){
  	// Teste socket
  	var socket  = io(window.location.origin);
@@ -12,20 +13,20 @@ $(document).ready(function(){
  	}); 
 
  	socket.on('msg', function (data) {
- 		Materialize.toast('Nova mensagem: '+ data.userName, 1000); 
+ 		// Materialize.toast('Nova mensagem: '+ data.userName, 1000); 
  		session.newMessage(data); 
  	});
 
  	socket.on('newUser', function(data){
  		console.log(data.data); 
- 		Materialize.toast('Novo usuário na sala hashName: '+ data.hashName+ ' name: '+ data.name, 4000); 
+ 		// Materialize.toast('Novo usuário na sala hashName: '+ data.hashName+ ' name: '+ data.name, 4000); 
  		session.newAvatar(data); 
  	}); 
 
  	socket.on('leave', function(data){
  		console.log("Um usuário deixou a sala"); 
  		session.removeAvatar(data.hashName); 
- 		Materialize.toast('Usuário saiu da sala', 4000); 
+ 		// Materialize.toast('Usuário saiu da sala', 4000); 
  	});
 
  	socket.on('reconnect_attempt', function(){
@@ -37,8 +38,8 @@ $(document).ready(function(){
  	}); 
 
  	socket.on('getRoomInfo',function(data){
- 		Materialize.toast(JSON.stringify(data), 4000);
- 		session.start(data.linkVideo,data.timeout,'small',data.play,data.users); 
+ 		// Materialize.toast(JSON.stringify(data), 4000);
+ 		session.start(data.linkVideo,data.timeout,'small',data.play,data.users,data.roomName); 
  	}); 
 
  	socket.on('onPlay',function(data){
@@ -68,17 +69,16 @@ $(document).ready(function(){
  		session.avatarStatusChange(data); 
  	});	
 
- 	function sendMsg(msg){
- 		socket.emit('msg',{ data : msg } ); 
- 	}
 
  	//another behavior: 
  	var isTyping = false; 
  	var typingTimeout; 
  	$('#input_box').keypress(function(event){
- 		if(event.which == 13){
- 			socket.emit('msg',{msg : $('#input_box').val()}); 
- 			session.clearInputBox(); 
+ 		if(event.which == 13 ){
+ 			if($('#input_box').val().trim().length > 0){
+ 				socket.emit('msg',{msg : $('#input_box').val()}); 
+ 				session.clearInputBox(); 
+ 			}
  			return;
  		}
 
@@ -95,8 +95,14 @@ $(document).ready(function(){
  				console.log("Parou de ditigar");
  				session.typeEnd();  
  			}
- 		},700); 
+ 		},450); 
  	}); 
+
+ 	var checkSynchronizationInterval; 
+ 	var DELAY_TO_SEND_SYNCH = 3 * 1000; //three seconds. 
+ 	checkSynchronizationInterval = setInterval(function(){
+ 		session.verifySynchronization(); 
+ 	},DELAY_TO_SEND_SYNCH); 
 
  	$('#volume').change(function(){
  		session.setVolume($('#volume').val());
@@ -110,6 +116,7 @@ $(document).ready(function(){
  		session.onThumbUp();
  	}); 
 
+ 	var msgUnRead = 0; 
  	// splashscrean
  	var SplashScrean = function(){
  		this.RATE = 1000; 
@@ -126,6 +133,6 @@ $(document).ready(function(){
  	var splash = new SplashScrean(); 
  	setTimeout(function(){
  		splash.hide();  
- 	},1000); 
+ 	},5000); 
  	
  }); 

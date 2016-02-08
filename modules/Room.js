@@ -3,7 +3,7 @@ var Room = function(){
 	this.room_owner = 'undefined'; 
 	this.intervalTimeout = null;
 	this.DELAY = 1000; //one second; 
-
+	this.EXCLUSION_DELAY_BOUND = 3 //three seconds. 
 	
 	this.started = false; 
 	this.play = false;
@@ -26,9 +26,9 @@ Room.prototype.whoIsTyping = function(name){
 		if(this.usersTyping[a] != name){
 
 			if( this.usersTyping.length > 2 && (a + 1 != this.usersTyping.legth))
-			temp += ""+this.usersTyping[a]+", "; 
+				temp += ""+this.usersTyping[a]+", "; 
 			else
-			temp += ""+this.usersTyping[a]+" e "; 
+				temp += ""+this.usersTyping[a]+" e "; 
 
 			count++; 
 		}
@@ -58,6 +58,13 @@ Room.prototype.removeUserFromTypingList = function(name){
 	if(idx != -1)
 		this.usersTyping.splice(idx,1); 
 }; 
+
+Room.prototype.isSynchronized = function(clientCurrentTime){
+	if( clientCurrentTime >= this.timeout_session-this.EXCLUSION_DELAY_BOUND 
+	&&  clientCurrentTime <= this.timeout_session+this.EXCLUSION_DELAY_BOUND)
+		return true; 
+	return false;	
+}; 	
 
 Room.prototype.newUser = function(hashName, nome){
 	this.users[hashName] = nome; 
