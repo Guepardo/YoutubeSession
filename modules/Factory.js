@@ -21,9 +21,5 @@ Factory.prototype.names = function(){
   return this.namesArray[Math.floor(Math.random() * this.namesArray.length) ]; 
 }; 
 
-Factory.prototype.images = function(){
-
-}; 
-
 
 module.exports = Factory; 

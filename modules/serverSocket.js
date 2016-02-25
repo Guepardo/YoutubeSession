@@ -82,9 +82,27 @@ socketServer.init = function(server) {
 				name     : socket.name
 			}; 
 			// delete socketServer[socket.hashName]; 
-			socketServer.rooms[socket.__room].removeUser(socket.hashName); 
+			var currentRoom = socketServer.rooms[socket.__room]; 
+			currentRoom.removeUser(socket.hashName); 
 
 			io.sockets.in(socket.__room).emit('leave',userInfo); 
+
+			
+			//Se o adminstrador da sala sair, um usuário deve ser sorteado como adminstrador.
+			if(!currentRoom.isOwner(socket.hashName))
+				return; 
+
+			var users = currentRoom.getAllUsers(); 
+
+			var index = Math.floor( Math.random() * users.length); 
+			
+			currentRoom.registerOwner(tempSocket.hashName); 
+			console.log("Nome do dono da sala: agora. "+tempSocket.name); 
+			var msgBuild ={
+				userName:  'Server', 
+				msg     :  'O usuário <b>'+tempSocket.name+'</b> é o novo adminstrador da sala.'
+			}; 
+			io.sockets.in(tempSocket.__room).emit('msg',msgBuild); 
 		});
 
 		socket.on('registerOwner', function(){

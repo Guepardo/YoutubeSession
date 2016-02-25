@@ -105,9 +105,7 @@ Room.prototype.setProperties = function(link_video,room_name){
 	this.room_name  = room_name;  
 }; 
 
-Room.prototype.registerOwner = function(hash){
-	if(this.room_owner != 'undefined' ) return; 
-	
+Room.prototype.registerOwner = function(hash){	
 	this.room_owner = hash; 
 	console.error("usuário registrado como proprietário"+ hash); 
 }; 
