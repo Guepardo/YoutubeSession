@@ -5,12 +5,11 @@ var http    = require("http");
 var bodyParser = require("body-parser"); 
 var socket = require("./modules/serverSocket"); 
 
-
 var app = express(); 
 
 //Arquivo de configuração de rotas: 
 //
-app.use(bodyParser.urlencoded());
+app.use(bodyParser.urlencoded({ extended: true})); 
 app.use(bodyParser.json()); 
 
 app.use('/', require("./routes/routes") );

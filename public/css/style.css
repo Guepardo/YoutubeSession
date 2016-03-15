@@ -17,6 +17,10 @@ p {
   font-weight: normal;
 }
 
+.brand-img-logo{
+  width: 160px;
+  margin-top: 16px;
+}
 .parallax{
   width: 50%;
   height: auto;
@@ -26,10 +30,11 @@ p {
   min-height: 400px;
   line-height: 0;
   height: auto;
+  background-color: rgba(62, 58, 58, 0.48);
 }
-  .parallax-container .section {
-    width: 100%;
-  }
+.parallax-container .section {
+  width: 100%;
+}
 
 .icon-block {
   padding: 0 15px;
