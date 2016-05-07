@@ -1,6 +1,6 @@
 var express = require('express'); 
 var url     = require('url'); 
-var socketServer = require('../modules/serverSocket'); 
+var ServerSocket = require('../modules/ServerSocket'); 
 var router = express.Router(); 
 
 //Consumir via Ajax: 
@@ -16,7 +16,7 @@ router.post('/register', function(req, res, next){
 	}
 	
 	//Tudo ocorrendo bem, crie a sala e pegue a hash; 
-	var hashId = socketServer.createRoom(queryUrl.v, nomeSala); 
+	var hashId = ServerSocket.createRoom(queryUrl.v, nomeSala); 
 
 	res.json({ status : true, msg : 'its working', hash : hashId});  
 }); 

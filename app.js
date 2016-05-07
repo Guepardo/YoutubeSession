@@ -3,12 +3,11 @@ var path    = require("path");
 var session = require("client-sessions"); 
 var http    = require("http"); 
 var bodyParser = require("body-parser"); 
-var socket = require("./modules/serverSocket"); 
+var ServerSocket = require("./modules/ServerSocket"); 
 
 var app = express(); 
 
 //Arquivo de configuração de rotas: 
-//
 app.use(bodyParser.urlencoded({ extended: true})); 
 app.use(bodyParser.json()); 
 
@@ -30,5 +29,5 @@ var port = process.env.PORT || 3000;
 app.set('port', port ); 
 var server = http.createServer(app);
 server.listen(port);  
-socket.init(server); 
+ServerSocket.init(server); 
 

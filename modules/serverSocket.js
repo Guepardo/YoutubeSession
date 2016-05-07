@@ -4,14 +4,16 @@ var Room     = require('./Room');
 var Factory  = require('./Factory'); 
 
 
-var socketServer ={}; 
+var ServerSocket = function(){}; 
 
-socketServer.init = function(server) {
-	socketServer.io = null; 
-	socketServer.rooms = [];
-	socketServer.io = io = new Server (server); 
+ServerSocket.prototype.init = function(server){
+	this.io = null; 
+	this.rooms = [];
+	this.io = io = new Server (server); 
 
-	socketServer.factory = new Factory(); 
+	this.factory = new Factory(); 
+
+	var self = this; 
 
 	console.log('!Servidor socket iniciado.'); 
 	io.on('connection', function(socket){
@@ -28,10 +30,10 @@ socketServer.init = function(server) {
 			socket.join(data.room); 
 
 			//alimentando array de usuários: 
-			var nameTemp = socketServer.factory.names(); 
+			var nameTemp = self.factory.names(); 
 			socket.name = nameTemp; 
 
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			//Enviando informações da sala para o usuário: 
 
 			var allUsers = currentRoom.getAllUsers();
@@ -44,7 +46,7 @@ socketServer.init = function(server) {
 
 				users.push(user); 
 			}
-	
+
 			var roomInfo = {
 				linkVideo: currentRoom.link_video,
 				roomName : currentRoom.room_name, 
@@ -81,8 +83,8 @@ socketServer.init = function(server) {
 				hashName : socket.hashName, 
 				name     : socket.name
 			}; 
-			// delete socketServer[socket.hashName]; 
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			// delete self[socket.hashName]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			currentRoom.removeUser(socket.hashName); 
 
 			io.sockets.in(socket.__room).emit('leave',userInfo); 
@@ -109,8 +111,8 @@ socketServer.init = function(server) {
 			if(socket.__room == 'undefined') return; 
 			
 			//Adicionando proprietário da sala: 
-			if(!socketServer.rooms[socket.__room].ownerExists())
-				socketServer.rooms[socket.__room].registerOwner(socket.hashName); 
+			if(!self.rooms[socket.__room].ownerExists())
+				self.rooms[socket.__room].registerOwner(socket.hashName); 
 			else
 				return; 
 
@@ -125,9 +127,9 @@ socketServer.init = function(server) {
 			console.log("onPlay" ); 
 			
 
-			socketServer.avatarStatusChange('Play',socket.hashName,socket.__room);  
+			self.avatarStatusChange('Play',socket.hashName,socket.__room);  
 
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!currentRoom.isOwner(socket.hashName))return;
 
@@ -146,15 +148,15 @@ socketServer.init = function(server) {
 
 		socket.on('onPause',function(data){
 			console.log("onPause" ); 
-			socketServer.avatarStatusChange('Pause',socket.hashName,socket.__room);  
+			self.avatarStatusChange('Pause',socket.hashName,socket.__room);  
 
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!currentRoom.isOwner(socket.hashName))return;
 
 			io.sockets.in(socket.__room).emit('onPause'); 
 			currentRoom.setPause(); 
-				var msgTemp = {
+			var msgTemp = {
 				userName : socket.name, 
 				msg      : "Alguém acabou de dar pause"
 			}; 
@@ -163,7 +165,7 @@ socketServer.init = function(server) {
 
 		socket.on('onSeek',function(data){
 			console.log("onSeek" ); 
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			//executar o comando apenas se o socket for do proprietário: 
 			if(!currentRoom.isOwner(socket.hashName))return;
 			currentRoom.seekTimeout(socket.hashName, data.time); 
@@ -179,10 +181,10 @@ socketServer.init = function(server) {
 		socket.on('onStop',function(data){
 			console.log("onStop" ); 
 
-			socketServer.avatarStatusChange('Stop',socket.hashName,socket.__room);  
+			self.avatarStatusChange('Stop',socket.hashName,socket.__room);  
 
 			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+			if(!self.rooms[socket.__room].isOwner(socket.hashName))return;
 			io.sockets.in(socket.__room).emit('onStop'); 
 			
 			var msgTemp = {
@@ -194,10 +196,10 @@ socketServer.init = function(server) {
 
 		socket.on('onBuffering',function(data){
 			console.log("onBuffering" ); 
-			socketServer.avatarStatusChange('Buffering',socket.hashName,socket.__room); 
+			self.avatarStatusChange('Buffering',socket.hashName,socket.__room); 
 
 			//executar o comando apenas se o socket for do proprietário: 
-			if(!socketServer.rooms[socket.__room].isOwner(socket.hashName))return;
+			if(!self.rooms[socket.__room].isOwner(socket.hashName))return;
 			io.sockets.in(socket.__room).emit('onBuffering'); 
 			var msgTemp = {
 				userName : socket.name, 
@@ -214,11 +216,11 @@ socketServer.init = function(server) {
 			}
 
 			io.sockets.in(socket.__room).emit('msg',msgTemp); 
-			socketServer.avatarStatusChange('ThumbUp',socket.hashName,socket.__room); 
+			self.avatarStatusChange('ThumbUp',socket.hashName,socket.__room); 
 		}); 
 
 		socket.on('typeBegin', function(){
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			currentRoom.addUserFromTypingList(socket.name); 
 			var msg = currentRoom.whoIsTyping(); 
 			var msgTemp ={
@@ -229,7 +231,7 @@ socketServer.init = function(server) {
 		}); 
 
 		socket.on('typeEnd',function(){
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 			currentRoom.removeUserFromTypingList(socket.name); 
 			var msg = currentRoom.whoIsTyping(); 
 			var msgTemp ={
@@ -240,52 +242,56 @@ socketServer.init = function(server) {
 		}); 
 
 		socket.on('verifySynchronization',function(data){
-			var currentRoom = socketServer.rooms[socket.__room]; 
+			var currentRoom = self.rooms[socket.__room]; 
 
 			if(!currentRoom.isSynchronized(data.currentTime) &&
 				currentRoom.isStarted()                    ){
 				//
-				socket.emit('onSeek',{time : currentRoom.getTimeout()}); 
-				var msgTemp = {
-					userName : 'Server', 
-					msg      : "Seu player foi sincronizado com o servidor."
-				}; 
-				socket.emit('msg',msgTemp); 
-			}
-		}); 	
+			socket.emit('onSeek',{time : currentRoom.getTimeout()}); 
+			var msgTemp = {
+				userName : 'Server', 
+				msg      : "Seu player foi sincronizado com o servidor."
+			}; 
+			socket.emit('msg',msgTemp); 
+		}
+	}); 	
 	}); 
+};
 
-socketServer.roomExists = function(hashId){
+ServerSocket.prototype.roomExists = function(hashId){
 	return ( this.rooms[hashId] != null  );
-}
+};
 
-socketServer.avatarStatusChange = function(action,hashName,room){
+ServerSocket.prototype.avatarStatusChange = function(action,hashName,room){
 	var avatarChange = {
 		hashName :   hashName, 
 		action   :   action
 	};
 	io.sockets.in(room).emit('avatarStatusChange', avatarChange); 
-}; 
+};
 
-socketServer.createRoom = function(name,url){
+ServerSocket.prototype.createRoom = function(name,url){
 	console.log(this.rooms); 
-	
-		//criando hash para a sala: 
-		var data     = new Date().toString(); 
-		var hashName = CryptoJS.MD5(name + data).toString(); 
 
-		this.rooms[hashName] = new Room();  
+	//criando hash para a sala: 
+	var data     = new Date().toString(); 
+	var hashName = CryptoJS.MD5(name + data).toString(); 
 
-		this.rooms[hashName].registerSessionName(hashName);
-		this.rooms[hashName].setProperties(name,url); 
-		console.log(this.rooms[hashName]); 
+	this.rooms[hashName] = new Room();  
 
-		return hashName; 
-	}; 
+	this.rooms[hashName].registerSessionName(hashName);
+	this.rooms[hashName].setProperties(name,url); 
+	console.log(this.rooms[hashName]); 
 
-	socketServer.deleteRoom = function(hashNames){
-		delete this.rooms[hashName]; 
-	}; 
+	return hashName; 
 }; 
 
-module.exports = socketServer; 
+ServerSocket.prototype.deleteRoom = function(hashNames){
+	delete this.rooms[hashName]; 
+}; 
+
+ServerSocket.prototype.getInformations = function(){
+	return this.rooms; 
+};
+
+module.exports = new ServerSocket(); 

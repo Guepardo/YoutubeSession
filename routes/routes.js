@@ -1,9 +1,11 @@
-var express = require("express"); 
-var router  = express.Router(); 
-
+var express      = require("express"); 
+var router       = express.Router(); 
+var ServerSocket = require("../modules/ServerSocket"); 
 //Main page. 
+
 router.get('/',function(req, res, next){
-   res.render('index.html');  
+   var rooms = ServerSocket.getInformations(); 
+   res.render('index.html', {rooms: rooms});  
 }); 
 
 router.get('/socktest', function(req, res, next){
