@@ -50,7 +50,7 @@ Room.prototype.whoIsTyping = function(name){
 
 Room.prototype.addUserFromTypingList = function(name){
 	this.usersTyping.push(name); 
-	console.log(this.usersTyping); 
+	//console.log(this.usersTyping); 
 }; 
 
 Room.prototype.removeUserFromTypingList = function(name){
@@ -106,8 +106,7 @@ Room.prototype.setProperties = function(link_video,room_name){
 }; 
 
 Room.prototype.registerOwner = function(hash){	
-	this.room_owner = hash; 
-	console.error("usuário registrado como proprietário"+ hash); 
+	this.room_owner = hash; //console.error("usuário registrado como proprietário"+ hash); 
 }; 
 
 Room.prototype.ownerExists = function(){
@@ -118,8 +117,7 @@ Room.prototype.isOwner = function(hash){
 	return (this.room_owner == hash ); 
 }; 
 
-Room.prototype.isStarted = function(){
-	console.log('isStarted' + this.started); 
+Room.prototype.isStarted = function(){//console.log('isStarted' + this.started); 
 	return this.started; 
 }; 
 
@@ -133,7 +131,7 @@ Room.prototype.startSession = function(hashOwner, video_duration){
 		if(self.timeout_session <= self.video_duration){
 			if(self.play)self.timeout_session += 1;//one second 	
 		}
-		console.log('time courrent: '+ self.timeout_session +" duration : " + self.video_duration +" play "+ self.play); 
+//console.log('time courrent: '+ self.timeout_session +" duration : " + self.video_duration +" play "+ self.play); 
 	},this.DELAY); 
 
 	return true; 

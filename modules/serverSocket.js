@@ -98,13 +98,13 @@ ServerSocket.prototype.init = function(server){
 
 			var index = Math.floor( Math.random() * users.length); 
 			
-			currentRoom.registerOwner(tempSocket.hashName); 
-			console.log("Nome do dono da sala: agora. "+tempSocket.name); 
-			var msgBuild ={
-				userName:  'Server', 
-				msg     :  'O usuário <b>'+tempSocket.name+'</b> é o novo adminstrador da sala.'
-			}; 
-			io.sockets.in(tempSocket.__room).emit('msg',msgBuild); 
+			// currentRoom.registerOwner(tempSocket.hashName); 
+			// console.log("Nome do dono da sala: agora. "+tempSocket.name); 
+			// var msgBuild ={
+			// 	userName:  'Server', 
+			// 	msg     :  'O usuário <b>'+tempSocket.name+'</b> é o novo adminstrador da sala.'
+			// }; 
+			// io.sockets.in(tempSocket.__room).emit('msg',msgBuild); 
 		});
 
 		socket.on('registerOwner', function(){
@@ -291,7 +291,24 @@ ServerSocket.prototype.deleteRoom = function(hashNames){
 }; 
 
 ServerSocket.prototype.getInformations = function(){
-	return this.rooms; 
+	var result = new Array(); 
+	//what informations have I get?
+	console.log(this.rooms); 
+
+	for(key in this.rooms){
+		var room = new Object(); 
+		console.log(this.rooms[key]); 
+		room.room_name 		 = this.rooms[key].room_name; 
+		room.timeout_session = this.rooms[key].timeout_session; 
+		room.video_duration  = this.rooms[key].video_duration; 
+		room.session_name    = this.rooms[key].session_name; 
+		room.users           = 0; 
+		for(key in this.rooms[key].users) room.users++; 
+
+		result.push(room); 
+	}
+
+	return result; 
 };
 
 module.exports = new ServerSocket(); 

@@ -5,6 +5,8 @@ var ServerSocket = require("../modules/ServerSocket");
 
 router.get('/',function(req, res, next){
    var rooms = ServerSocket.getInformations(); 
+   console.log(rooms); 
+
    res.render('index.html', {rooms: rooms});  
 }); 
 
