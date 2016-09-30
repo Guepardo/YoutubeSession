@@ -3,7 +3,7 @@ var path         = require("path");
 var session      = require("client-sessions"); 
 var http    	 = require("http"); 
 var bodyParser   = require("body-parser"); 
-var ServerSocket = require("./modules/ServerSocket"); 
+var ServerSocket = require("./modules/serverSocket"); 
 
 var app = express(); 
 
