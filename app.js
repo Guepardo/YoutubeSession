@@ -30,6 +30,6 @@ var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 // app.set('port', port ); 
 
 var server = http.createServer(app);
-server.listen(ipaddress, port);  
+server.listen(port, ipaddress);  
 ServerSocket.init(server); 
 
