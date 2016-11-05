@@ -2,7 +2,7 @@
   "name": "youtube-session",
   "version": "1.0.0",
   "description": "Assista os vídeos com seus amigos em tempo real sem sair de casa. ",
-  "main": "index.js",
+  "main": "app.js",
   "scripts": {
     "start": "node app.js"
   },
