@@ -24,10 +24,12 @@ app.engine('html', require('ejs').renderFile);
 app.set('view engine', 'ejs'); 
 
 //Iniciando servidor: 
-var port = process.env.OPENSHIFT_NODEJS_PORT || 3000; 
+var port = process.env.OPENSHIFT_NODEJS_PORT    || 3000; 
+var ipaddress = process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1";
 
-app.set('port', port ); 
+// app.set('port', port ); 
+
 var server = http.createServer(app);
-server.listen(port);  
+server.listen(ipaddress, port);  
 ServerSocket.init(server); 
 
