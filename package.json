@@ -4,8 +4,7 @@
   "description": "Assista os vídeos com seus amigos em tempo real sem sair de casa. ",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node ./app.js"
+    "start": "node app.js"
   },
   "author": "Allyson Maciel Guimarães <bsinet@hotmail.com>",
   "license": "ISC",
