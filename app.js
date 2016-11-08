@@ -5,6 +5,9 @@ var http    	 = require("http");
 var bodyParser   = require("body-parser"); 
 var ServerSocket = require("./modules/serverSocket"); 
 
+var port = process.env.PORT || process.env.OPENSHIFT_NODEJS_PORT || 8080; 
+var ip   = process.env.IP   || process.env.OPENSHIFT_NODEJS_IP || '0.0.0.0'; 
+
 var app = express(); 
 
 //Arquivo de configuração de rotas: 
@@ -23,11 +26,9 @@ app.set('views', __dirname + '/views');
 app.engine('html', require('ejs').renderFile); 
 app.set('view engine', 'ejs'); 
 
-//Iniciando servidor: 
-app.set('port', process.env.OPENSHIFT_NODEJS_PORT || process.env.PORT || 3000);
-app.set('ip', process.env.OPENSHIFT_NODEJS_IP || "127.0.0.1");
 
 var server = http.createServer(app);
-server.listen(app.get('port') ,app.get('ip'));  
+server.listen(port, ip);  
 ServerSocket.init(server); 
 
+module.exports = server; 
